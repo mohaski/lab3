@@ -10,10 +10,8 @@ conn = sqlite3.connect('data.sqlite')
 
 pd.read_sql("""SELECT * FROM sqlite_master""", conn)
 
-# CodeGrade step1
-# Replace None with your code
 df_boston = pd.read_sql("""
-SELECT e.firstName, e.lastName, e.jobTitle 
+SELECT e.firstName, e.lastName 
 FROM employees e 
 JOIN offices o USING(officeCode)
 WHERE o.city = 'Boston'                  
@@ -50,6 +48,7 @@ SELECT c.contactfirstname, c.contactlastname, c.phone, salesrepemployeenumber
 FROM customers c
 LEFT JOIN orders o USING(customerNumber)
 WHERE o.customerNumber IS NULL
+ORDER BY c.contactlastname
                         """, conn)
 
 df_contacts
@@ -57,22 +56,24 @@ df_contacts
 # CodeGrade step5
 # Replace None with your code
 df_payment = pd.read_sql("""
-SELECT c.contactfirstname, c.contactlastname, p.paymentdate, p.amount 
+SELECT c.contactfirstname, c.contactlastname, p.paymentdate, p.amount   
 FROM customers c 
 JOIN payments p USING(customerNumber)
-ORDER BY p.amount                  
-                        """, conn)
+ORDER BY CAST(p.amount AS DECIMAL(10,2)) DESC;
+""", conn)
 
 df_payment
 
 # CodeGrade step6
 # Replace None with your code
+
 df_credit = pd.read_sql("""
 SELECT e.firstName, e.lastName, e.employeenumber, COUNT(c.salesrepemployeenumber) AS number_of_customers
 FROM employees e 
 JOIN customers c ON e.employeenumber = c.salesrepemployeenumber
 GROUP BY e.employeenumber
 HAVING AVG(c.creditlimit) > 90000
+ORDER BY number_of_customers DESC
                         """, conn)
 
 df_credit
